@@ -1,0 +1,36 @@
+受文者：{{ agency or "【缺資料】" }}
+發文日期：{{ display_yyyy }}年{{ display_mm }}月{{ display_dd }}日（西元 {{ display_iso }}）
+主旨：就 貴機關 {{ reference_date or "【缺資料】" }} 基準日 來函查詢之保險資料，復如說明，請查照。
+
+說明：
+一、來函資訊：
+　　發文字號（來文）：{{ doc_no or "【未提供】" }}
+{% if officer_role or officer_name or contact_phone %}
+　　承辦資訊：{{ officer_role or "" }}{% if officer_role and officer_name %}／{% endif %}{{ officer_name or "" }}　電話：{{ contact_phone or "【未提供】" }}
+{% endif %}
+
+二、來函查詢對象：
+{% if targets and targets|length>0 -%}
+{% for p in targets %}
+　　({{ loop.index }}) 姓名：{{ p.name or "【缺資料】" }}{% if p.alias and p.alias|length>0 %}（原名/別名：{{ p.alias|join('、') }}）{% endif %}，身分證號：{{ p.tw_id or "【缺資料】" }}{% if not p.get("id_valid", True) %}【身分證檢核未通過，請覆核】{% endif %}
+{% endfor %}
+{%- else %}
+　　【未擷取到查詢對象】
+{%- endif %}
+
+三、查詢基準日：{{ reference_date or "【缺資料】" }}
+
+四、查詢保單項目：
+{% if policies and policies|length>0 -%}
+{% for pol in policies %}
+　　- {{ pol.raw }}{% if pol.normalized %}（代碼：{{ pol.normalized }}）{% endif %}{% if pol.policy_no %}，保單號：{{ pol.policy_no }}{% endif %}
+{% endfor %}
+{%- else %}
+　　【未擷取到保單項目】
+{%- endif %}
+
+{% if class_specific and class_specific.get("note") %} 
+五、{{ class_specific.get("note")}} 
+{% endif %}
+
+（以上內容僅就已提供資料範圍敘明，若需補充文件或授權，請依程序補齊。）

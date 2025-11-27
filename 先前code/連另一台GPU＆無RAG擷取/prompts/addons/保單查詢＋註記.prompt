@@ -1,0 +1,11 @@
+補充（class="保單查詢＋註記"）：
+請在 JSON 中加入或覆蓋 "policies" 欄位，格式如下：
+"policies": [
+  {"raw": "string", "normalized": null, "policy_no": null}
+]
+
+規則：
+1) 從文本中擷取要查的保單項目，盡量逐項列出（例如：壽險、意外險、醫療險、保單號等）。
+2) 先將原文寫入 raw；若只有自然語句（如「壽險與意外險」），請切分為多筆 raw。
+3) 不要臆造 normalized 或 policy_no，未知就留 null。
+4) 僅輸出完整 JSON 物件（不可只輸出 policies 片段）。

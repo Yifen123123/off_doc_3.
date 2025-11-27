@@ -1,0 +1,36 @@
+你是台灣公文的資訊抽取器。請根據「清洗後文本」抽取欄位並**僅輸出 JSON 物件**，符合下列 schema：
+{
+  "agency": "string|null",               // 來函機關（如：臺北地方檢察署、○○市政府）
+  "reference_date": "yyyy-mm-dd|null",   // 基準日，民國年需轉西元
+  "doc_no": "string|null",               // 來文之發文字號/文號（樣式多元，原樣保留）
+  "officer_role": "string|null",         // 承辦人的職稱（如：書記官、承辦人、聯絡人、股員）
+  "officer_name": "string|null",         // 承辦人姓名（若無姓名也可只填職稱）
+  "contact_phone": "string|null",        // 聯絡電話，可含分機（原樣擷取）
+   "doc_date": "yyyy-mm-dd|null",        // 來文/發文日期（若無則 null）
+  "targets": [                           // 函查對象（可多筆）
+    {
+      "name": "string",                  // 中文姓名（若無姓名但有身分證仍請建立此筆，name 可為 null）
+      "alias": ["string"],               // 原名/又名/別名（若有）
+      "tw_id": "string|null"             // 身分證號，若格式不符請給 null（系統會做檢查碼驗證）
+    }
+  ],
+  "class_specific": {},                  // 類別特有欄位由 add-on 補充
+  "notes": ["string"]                    // 可留空陣列
+}
+
+規則：
+0) 僅輸出 JSON，不要加入公司名稱、抬頭、結語或建議語。
+1) 日期一律 yyyy-mm-dd；民國年需自行轉為西元。
+2) **doc_date**：若文中出現「發文日期/發文日/來文日期/來文日」等，請擷取最可能的一組日期並轉為 yyyy-mm-dd；若沒有就填 null。
+3) 發文字號請擷取最完整一組（如「○○字第xxxxx號」或「文號：xxxxx」）。
+4) 承辦資訊：若只有職稱（書記官/承辦人/聯絡人…）無姓名，officer_role 填職稱、officer_name 填 null。
+5) 聯絡電話原樣擷取（可含分機、或/、#、轉），若無則 null。
+6) 身分證若可疑或格式不符，tw_id 填 null（不要猜）。
+7) **函查對象為高優先：文件中可辨識至少一位對象（姓名或身分證）時，一定要在 targets 中輸出這筆。**
+8) 保單查詢項目 **不要在此抽取**；若該類別需要，將由 add-on 提供並寫入 `class_specific` 或 `policies`。
+9) 若某欄位沒有，請用 null 或空陣列表示。
+
+清洗後文本：
+<<<
+{{TEXT}}
+>>>
