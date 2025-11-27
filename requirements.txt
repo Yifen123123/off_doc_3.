@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+langchain
+langchain-community
+langchain-core
+langchain-text-splitters
+chromadb
+sentence-transformers
+transformers
+huggingface_hub
+torch
+gradio
+pydantic
